@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE GOATs</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:Arial,Helvetica,sans-serif;background:#f5f5f5;color:#111}
+
+/* HEADER */
+header{background:#050505;color:white;padding:18px 5%;display:flex;justify-content:space-between;align-items:center;gap:20px}
+.logo img{width:130px;max-width:100%;height:auto;display:block}
+nav{display:flex;gap:25px;flex-wrap:wrap}
+nav a{color:white;text-decoration:none;font-size:15px}
+nav a:hover{color:#ff8a00}
+
+/* HERO */
+.hero{min-height:400px;background:linear-gradient(rgba(8,20,45,.5),rgba(20,70,120,.5)),url("https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=1600&q=80");background-size:cover;background-position:center;color:white;display:flex;justify-content:center;align-items:center;text-align:center;padding:45px 20px}
+.hero-content{width:100%;max-width:1000px}
+.hero h1{font-size:clamp(30px,5vw,55px);margin-bottom:18px}
+.hero p{font-size:clamp(16px,2.5vw,21px);margin-bottom:30px;color:#eee}
+
+/* SEARCH */
+.search-box{width:100%;max-width:850px;margin:auto;position:relative}
+.search-box input{width:100%;height:60px;border-radius:40px;border:none;outline:none;padding:0 60px 0 25px;font-size:17px;background:white}
+.search-box input:focus{box-shadow:0 0 0 4px rgba(255,138,0,.3)}
+.search-icon{position:absolute;right:22px;top:30px;transform:translateY(-50%);font-size:23px;pointer-events:none}
+.suggestions{position:absolute;top:calc(100% + 8px);left:10px;right:10px;background:white;color:#071b52;border-radius:12px;box-shadow:0 5px 18px rgba(0,0,0,.2);z-index:1000;text-align:left;display:none;max-height:300px;overflow-y:auto}
+.suggestion-item{padding:13px 20px;cursor:pointer;font-size:15px;color:#222;border-bottom:1px solid #eee}
+.suggestion-item:hover,.suggestion-item:focus{background:#e9efff;outline:none}
+.suggestion-item strong{color:#071b52}
+.suggestion-item small{color:#777;font-size:12px;margin-left:5px}
+
+/* PLAYERS */
+.players-section{background:#f5f5f5;padding:50px 5% 75px}
+.section-title{text-align:center;margin-bottom:30px}
+.section-title h2{font-size:clamp(25px,4vw,36px);color:#071b52;margin-bottom:8px}
+.section-title p{color:#555}
+
+/* FILTER BUTTONS */
+.filter-buttons{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:35px}
+.filter-buttons button{border:1px solid #ddd;background:white;color:#333;padding:11px 20px;border-radius:30px;font-weight:bold;cursor:pointer;transition:.3s}
+.filter-buttons button:hover,.filter-buttons button.active{background:#071b52;color:white}
+
+/* PLAYER GRID */
+.player-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:25px;align-items:stretch}
+.player-card{background:white;border-radius:12px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,.12);transition:transform .3s,box-shadow .3s;min-width:0;display:flex;flex-direction:column}
+.player-card:hover{transform:translateY(-5px);box-shadow:0 10px 25px rgba(0,0,0,.18)}
+.player-image{width:100%;height:300px;background:#e8edf4;display:flex;justify-content:center;align-items:center;overflow:hidden;flex-shrink:0}
+.player-image img{display:block;width:100%;height:100%;object-fit:contain;object-position:center}
+.no-image{font-size:70px;color:#071b52;display:flex;align-items:center;justify-content:center;width:100%;height:100%}
+
+/* PLAYER INFORMATION */
+.player-info{padding:20px;display:flex;flex-direction:column;flex:1}
+.player-info h3{font-size:21px;color:#071b52;margin-bottom:12px;overflow-wrap:anywhere}
+.country{color:#444;margin-bottom:10px;font-size:14px}
+.role{display:inline-block;align-self:flex-start;padding:6px 12px;background:#e9efff;color:#071b52;border-radius:20px;font-size:12px;font-weight:bold;margin-bottom:15px}
+.player-details{line-height:1.8;font-size:14px;color:#444;margin-bottom:18px;overflow-wrap:anywhere}
+.player-details strong{color:#111}
+.description{color:#666;line-height:1.6;font-size:14px;margin-bottom:18px}
+.profile-btn{width:100%;padding:12px;margin-top:auto;background:#071b52;color:white;border:none;border-radius:6px;font-weight:bold;cursor:pointer;transition:.3s}
+.profile-btn:hover{background:#ff8a00}
+
+/* SEARCH MESSAGES */
+.loading,.no-result{grid-column:1/-1;text-align:center;padding:50px 20px}
+.loading{font-size:19px;color:#071b52}
+.loading span{display:block;margin-top:10px;font-size:14px;color:#777}
+.no-result h3{color:#071b52;font-size:24px;margin-bottom:10px}
+.no-result p{color:#666}
+
+/* STATISTICS */
+.stats-section{background:#071b52;color:white;padding:60px 5%}
+.stats-section h2{color:white;text-align:center;margin-bottom:30px}
+.stats-grid{max-width:1000px;margin:auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
+.stat-box{background:rgba(255,255,255,.08);padding:28px 15px;border-radius:12px;text-align:center}
+.stat-box h3{font-size:clamp(28px,4vw,40px);color:#ff8a00;margin-bottom:8px}
+.stat-box p{color:#ddd}
+
+/* ABOUT */
+.about-section{padding:60px 6%;text-align:center;background:white}
+.about-section h2{color:#071b52;font-size:clamp(26px,4vw,34px);margin-bottom:15px}
+.about-section p{max-width:800px;margin:auto;color:#666;line-height:1.8}
+
+/* FOOTER */
+footer{background:#030303;color:#ccc;text-align:center;padding:22px 15px;line-height:1.6}
+
+/* PROFILE WINDOW */
+.profile-page{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#071b52,#0b3d91);min-height:100vh;padding:35px 15px}
+.profile-page .profile{max-width:850px;margin:auto;background:white;border-radius:18px;overflow:hidden;box-shadow:0 15px 50px rgba(0,0,0,.3)}
+.profile-page .top{background:#071b52;color:white;text-align:center;padding:30px 20px}
+.profile-page .top img{width:210px;height:250px;max-width:100%;object-fit:contain;object-position:center;margin-bottom:15px}
+.profile-page .top h1{font-size:clamp(25px,5vw,38px);margin-bottom:10px;overflow-wrap:anywhere}
+.profile-page .top p{color:#ddd;line-height:1.6}
+.profile-page .content{padding:25px}
+.profile-page .details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.profile-page .box{background:#f1f4f9;padding:18px;border-radius:10px;overflow-wrap:anywhere}
+.profile-page .box h4{color:#071b52;margin-bottom:8px}
+.profile-page .box p{color:#444;line-height:1.6}
+.profile-page .about{margin-top:25px}
+.profile-page .about h2{color:#071b52;margin-bottom:12px}
+.profile-page .about p{color:#555;line-height:1.8}
+.profile-page .buttons{margin-top:25px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
+.profile-page .buttons button,.profile-page .buttons a{padding:12px 20px;border:none;border-radius:7px;background:#071b52;color:white;text-decoration:none;cursor:pointer;font-weight:bold;font-size:14px}
+.profile-page .buttons button:hover,.profile-page .buttons a:hover{background:#ff8a00}
+
+/* TABLET */
+@media(max-width:1000px){
+.player-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.player-image{height:280px}
+}
+
+/* MOBILE */
+@media(max-width:600px){
+header{flex-direction:column;padding:18px 15px;gap:18px}
+.logo img{width:115px}
+nav{justify-content:center;gap:12px 18px}
+nav a{font-size:14px}
+.hero{min-height:330px;padding:35px 15px}
+.hero p{line-height:1.5}
+.search-box input{height:52px;font-size:15px;padding-left:18px}
+.search-icon{top:26px}
+.players-section{padding:35px 15px 50px}
+.filter-buttons{gap:8px;margin-bottom:28px}
+.filter-buttons button{padding:10px 14px;font-size:12px}
+.player-grid{grid-template-columns:minmax(0,1fr);gap:22px}
+.player-image{height:320px}
+.player-info{padding:18px}
+.stats-section{padding:45px 15px}
+.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.stat-box{padding:22px 10px}
+.stat-box p{font-size:13px}
+.about-section{padding:45px 20px}
+.profile-page .details{grid-template-columns:1fr}
+.profile-page .content{padding:18px}
+}
+
+/* SMALL MOBILE */
+@media(max-width:350px){
+nav{gap:12px}
+.player-image{height:260px}
+.stats-grid{grid-template-columns:1fr}
+.filter-buttons button{padding:9px 12px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">
+        <a href="#home">
+            <img src="logo1.png" alt="CricketWorld Logo">
+        </a>
+    </div>
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#players">Players</a>
+        <a href="#statistics">Statistics</a>
+        <a href="#about">About</a>
+    </nav>
+</header>
+
+<section class="hero" id="home">
+    <div class="hero-content">
+        <h1>Cricket — Legends Never Die</h1>
+        <p>Cricket Legends | The Greatest Cricketers of All Time</p>
+        <div class="search-box">
+            <input type="text" id="search"
+                placeholder="Search any cricket player..."
+                autocomplete="off"
+                oninput="searchPlayers()"
+                onkeydown="handleSearchKey(event)"
+                onfocus="showSuggestions(this.value)">
+            <span class="search-icon">🔍</span>
+            <div id="suggestions" class="suggestions"></div>
+        </div>
+    </div>
+</section>
+
+<section class="players-section" id="players">
+    <div class="section-title">
+        <h2>Cricket Players</h2>
+        <p>Explore cricket legends from India and around the world</p>
+    </div>
+    <div class="filter-buttons">
+        <button class="active" onclick="filterPlayers('all',this)">All Players</button>
+        <button onclick="filterPlayers('India',this)">India</button>
+        <button onclick="filterPlayers('International',this)">International</button>
+        <button onclick="filterPlayers('Batter',this)">Batter</button>
+        <button onclick="filterPlayers('Bowler',this)">Bowler</button>
+        <button onclick="filterPlayers('All-rounder',this)">All-rounder</button>
+        <button onclick="filterPlayers('Wicketkeeper',this)">Wicketkeeper</button>
+    </div>
+    <div class="player-grid" id="playerContainer"></div>
+</section>
+
+<section class="stats-section" id="statistics">
+    <h2>CricketWorld Statistics</h2>
+    <div class="stats-grid">
+        <div class="stat-box"><h3 id="playerCount">0</h3><p>Featured Players</p></div>
+        <div class="stat-box"><h3>2</h3><p>Categories</p></div>
+        <div class="stat-box"><h3>4</h3><p>Major Roles</p></div>
+        <div class="stat-box"><h3>3</h3><p>Formats</p></div>
+    </div>
+</section>
+
+<section class="about-section" id="about">
+    <h2>About CricketWorld</h2>
+    <p>
+        CricketWorld is a cricket player encyclopedia where you can search
+        for cricket players from India and around the world. Search for a
+        player and view their information in the player card.
+    </p>
+</section>
+
+<footer>
+    <p>© 2026 CricketWorld. Cricket Player Encyclopedia.</p>
+</footer>
+
+<script>
+/* PLAYER DATA */
+const players = [
+    {name:"Virat Kohli",country:"India",countryName:"India",role:"Batter",batting:"Right-hand Bat",bowling:"Right-arm Medium",type:"Batter",formats:"Test, ODI, T20I",image:"VV.png",description:"Indian international cricketer and one of the most successful modern batters."},
+    {name:"Rohit Sharma",country:"India",countryName:"India",role:"Batter",batting:"Right-hand Bat",bowling:"Right-arm Off Break",type:"Batter",formats:"Test, ODI, T20I",image:"rs.jpeg",description:"Indian opening batter known for powerful stroke play and leadership."},
+    {name:"Jasprit Bumrah",country:"India",countryName:"India",role:"Bowler",batting:"Right-hand Bat",bowling:"Right-arm Fast",type:"Bowler",formats:"Test, ODI, T20I",image:"B.jpeg",description:"Indian fast bowler known for his pace, accuracy and yorkers."},
+    {name:"Ravindra Jadeja",country:"India",countryName:"India",role:"All-rounder",batting:"Left-hand Bat",bowling:"Left-arm Orthodox",type:"All-rounder",formats:"Test, ODI, T20I",image:"RJ.png",description:"Indian all-rounder known for batting, spin bowling and outstanding fielding."},
+    {name:"Rishabh Pant",country:"India",countryName:"India",role:"Wicketkeeper",batting:"Left-hand Bat",bowling:"None",type:"Wicketkeeper",formats:"Test, ODI, T20I",image:"P.png",description:"Indian wicketkeeper-batter known for aggressive and attacking cricket."},
+    {name:"Shubman Gill",country:"India",countryName:"India",role:"Batter",batting:"Right-hand Bat",bowling:"Right-arm Off Break",type:"Batter",formats:"Test, ODI, T20I",image:"SG.png",description:"Indian top-order batter known for elegant stroke play."},
+    {name:"KL Rahul",country:"India",countryName:"India",role:"Wicketkeeper",batting:"Right-hand Bat",bowling:"None",type:"Wicketkeeper",formats:"Test, ODI, T20I",image:"KL.png",description:"Indian batter and wicketkeeper known for his versatility."},
+    {name:"Hardik Pandya",country:"India",countryName:"India",role:"All-rounder",batting:"Right-hand Bat",bowling:"Right-arm Fast Medium",type:"All-rounder",formats:"ODI, T20I",image:"HP.png",description:"Indian pace-bowling all-rounder known for powerful batting."},
+    {name:"Mohammed Siraj",country:"India",countryName:"India",role:"Bowler",batting:"Right-hand Bat",bowling:"Right-arm Fast",type:"Bowler",formats:"Test, ODI, T20I",image:"MS.png",description:"Indian fast bowler known for pace and swing."},
+    {name:"Kuldeep Yadav",country:"India",countryName:"India",role:"Bowler",batting:"Left-hand Bat",bowling:"Left-arm Wrist Spin",type:"Bowler",formats:"Test, ODI, T20I",image:"KD.png",description:"Indian wrist spinner known for his variations."},
+    {name:"Suryakumar Yadav",country:"India",countryName:"India",role:"Batter",batting:"Right-hand Bat",bowling:"Right-arm Medium",type:"Batter",formats:"ODI, T20I",image:"SY.png",description:"Indian batter known for innovative and aggressive T20 batting."},
+    {name:"Yashasvi Jaiswal",country:"India",countryName:"India",role:"Batter",batting:"Left-hand Bat",bowling:"Right-arm Leg Break",type:"Batter",formats:"Test, T20I",image:"YJ.png",description:"Indian opening batter known for aggressive stroke play."},
+    {name:"MS Dhoni",country:"India",countryName:"India",role:"Wicketkeeper",batting:"Right-hand Bat",bowling:"Right-arm Medium",type:"Wicketkeeper",formats:"Test, ODI, T20I",image:"MSD.png",description:"Former Indian captain and wicketkeeper-batter."},
+    {name:"Sachin Tendulkar",country:"India",countryName:"India",role:"Batter",batting:"Right-hand Bat",bowling:"Right-arm Medium",type:"Batter",formats:"Test, ODI",image:"ST.PNG",description:"Legendary Indian batter and one of cricket's greatest players."},
+    {name:"AB de Villiers",country:"International",countryName:"South Africa",role:"Batter",batting:"Right-hand Bat",bowling:"Right-arm Medium",type:"Batter",formats:"Test, ODI, T20I",image:"abd.png",description:"South African cricketer known for explosive batting and exceptional fielding."},
+    {name:"Chris Gayle",country:"International",countryName:"West Indies",role:"Batter",batting:"Left-hand Bat",bowling:"Right-arm Off Break",type:"Batter",formats:"Test, ODI, T20I",image:"gayle.png",description:"West Indian cricketer known for powerful batting and six-hitting."},
+    {name:"Steve Smith",country:"International",countryName:"Australia",role:"Batter",batting:"Right-hand Bat",bowling:"Right-arm Leg Break",type:"Batter",formats:"Test, ODI, T20I",image:"smith.png",description:"Australian batter known for his unconventional technique and consistency."},
+    {name:"Pat Cummins",country:"International",countryName:"Australia",role:"Bowler",batting:"Right-hand Bat",bowling:"Right-arm Fast",type:"Bowler",formats:"Test, ODI, T20I",image:"pat.png",description:"Australian fast bowler known for pace and accuracy."},
+    {name:"Glenn Maxwell",country:"International",countryName:"Australia",role:"All-rounder",batting:"Right-hand Bat",bowling:"Right-arm Off Break",type:"All-rounder",formats:"ODI, T20I",image:"gm.png",description:"Australian all-rounder famous for explosive batting."},
+    {name:"Kane Williamson",country:"International",countryName:"New Zealand",role:"Batter",batting:"Right-hand Bat",bowling:"Right-arm Off Break",type:"Batter",formats:"Test, ODI, T20I",image:"kw.png",description:"New Zealand batter known for calm leadership and technique."},
+    {name:"Joe Root",country:"International",countryName:"England",role:"Batter",batting:"Right-hand Bat",bowling:"Right-arm Off Break",type:"Batter",formats:"Test, ODI",image:"root.png",description:"English batter known for consistency in Test cricket."},
+    {name:"Ben Stokes",country:"International",countryName:"England",role:"All-rounder",batting:"Left-hand Bat",bowling:"Right-arm Fast Medium",type:"All-rounder",formats:"Test, ODI, T20I",image:"bstokes.png",description:"English all-rounder famous for match-winning performances."},
+    {name:"Babar Azam",country:"International",countryName:"Pakistan",role:"Batter",batting:"Right-hand Bat",bowling:"Right-arm Off Break",type:"Batter",formats:"Test, ODI, T20I",image:"babar.png",description:"Pakistani batter known for elegant stroke play."},
+    {name:"Shaheen Shah Afridi",country:"International",countryName:"Pakistan",role:"Bowler",batting:"Left-hand Bat",bowling:"Left-arm Fast",type:"Bowler",formats:"Test, ODI, T20I",image:"afridi.png",description:"Pakistani left-arm fast bowler known for new-ball bowling."},
+    {name:"Travis Head",country:"International",countryName:"Australia",role:"Batter",batting:"Left-hand Bat",bowling:"Right-arm Off Break",type:"Batter",formats:"Test, ODI, T20I",image:"head.png",description:"Australian batter known for aggressive attacking cricket."},
+    {name:"Jos Buttler",country:"International",countryName:"England",role:"Wicketkeeper",batting:"Right-hand Bat",bowling:"None",type:"Wicketkeeper",formats:"Test, ODI, T20I",image:"butler.png",description:"English wicketkeeper-batter known for powerful limited-overs batting."},
+    {name:"Quinton de Kock",country:"International",countryName:"South Africa",role:"Wicketkeeper",batting:"Left-hand Bat",bowling:"None",type:"Wicketkeeper",formats:"Test, ODI, T20I",image:"peacock.png",description:"South African wicketkeeper-batter known for aggressive opening batting."},
+    {name:"Kagiso Rabada",country:"International",countryName:"South Africa",role:"Bowler",batting:"Right-hand Bat",bowling:"Right-arm Fast",type:"Bowler",formats:"Test, ODI, T20I",image:"rabada.png",description:"South African fast bowler known for pace and wicket-taking ability."},
+    {name:"Rashid Khan",country:"International",countryName:"Afghanistan",role:"Bowler",batting:"Right-hand Bat",bowling:"Right-arm Leg Break",type:"Bowler",formats:"ODI, T20I",image:"rashid.png",description:"Afghanistan leg spinner known for variations and T20 cricket."},
+    {name:"Shakib Al Hasan",country:"International",countryName:"Bangladesh",role:"All-rounder",batting:"Left-hand Bat",bowling:"Left-arm Orthodox",type:"All-rounder",formats:"Test, ODI, T20I",image:"hasan.png",description:"Bangladeshi all-rounder known for batting and spin bowling."},
+    {name:"David Warner",country:"International",countryName:"Australia",role:"Batter",batting:"Left-hand Bat",bowling:"Right-arm Leg Break",type:"Batter",formats:"Test, ODI, T20I",image:"david.png",description:"Australian opening batter known for explosive batting."},
+    {name:"Mushfiqur Rahim",country:"International",countryName:"Bangladesh",role:"Wicketkeeper",batting:"Right-hand Bat",bowling:"None",type:"Wicketkeeper",formats:"Test, ODI, T20I",image:"rahim.png",description:"Bangladeshi wicketkeeper-batter with a long international career."}
+];
+
+let currentFilter="all";
+let searchTimer=null;
+let suggestionTimer=null;
+let suggestionRequestID=0;
+let requestID=0;
+let externalPlayer=null;
+let selectedSuggestionIndex=-1;
+
+/* SAFE HTML */
+function escapeHTML(value){
+    if(value===undefined||value===null)return "";
+    return String(value)
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+/* DISPLAY PLAYER CARDS */
+function displayPlayers(list){
+    const container=document.getElementById("playerContainer");
+    if(!list||list.length===0){
+        container.innerHTML=`<div class="no-result"><h3>No players found</h3><p>Try another player name.</p></div>`;
+        return;
+    }
+    container.innerHTML=list.map(createPlayerCard).join("");
+}
+
+function createPlayerCard(player){
+    const imageHTML=player.image
+        ?`<img src="${escapeHTML(player.image)}" alt="${escapeHTML(player.name)}" onerror="this.style.display='none';this.parentElement.innerHTML='<div class=&quot;no-image&quot;>🏏</div>';">`
+        :`<div class="no-image">🏏</div>`;
+
+    return `
+        <div class="player-card">
+            <div class="player-image">${imageHTML}</div>
+            <div class="player-info">
+                <h3>${escapeHTML(player.name)}</h3>
+                <div class="country">🌍 ${escapeHTML(player.countryName||player.country||"Unknown")}</div>
+                <span class="role">${escapeHTML(player.role||"Cricket Player")}</span>
+                <div class="player-details">
+                    <div><strong>Country:</strong> ${escapeHTML(player.countryName||player.country||"Not available")}</div>
+                    <div><strong>Role:</strong> ${escapeHTML(player.role||"Not available")}</div>
+                    <div><strong>Batting:</strong> ${escapeHTML(player.batting||"Not available")}</div>
+                    <div><strong>Bowling:</strong> ${escapeHTML(player.bowling||"Not available")}</div>
+                    <div><strong>Formats:</strong> ${escapeHTML(player.formats||"Not available")}</div>
+                </div>
+                <p class="description">${escapeHTML(player.description||"Information not available.")}</p>
+                <button class="profile-btn" onclick="openProfileByName('${escapeHTML(player.name)}')">VIEW FULL PROFILE ↗</button>
+            </div>
+        </div>`;
+}
+
+/* SPELLING DISTANCE */
+function spellingDistance(a,b){
+    a=a.toLowerCase().trim();
+    b=b.toLowerCase().trim();
+
+    const dp=Array.from({length:a.length+1},()=>Array(b.length+1).fill(0));
+    for(let i=0;i<=a.length;i++)dp[i][0]=i;
+    for(let j=0;j<=b.length;j++)dp[0][j]=j;
+
+    for(let i=1;i<=a.length;i++){
+        for(let j=1;j<=b.length;j++){
+            const cost=a[i-1]===b[j-1]?0:1;
+            dp[i][j]=Math.min(
+                dp[i-1][j]+1,
+                dp[i][j-1]+1,
+                dp[i-1][j-1]+cost
+            );
+        }
+    }
+    return dp[a.length][b.length];
+}
+
+/* AUTOMATIC SPELLING CORRECTION FOR LOCAL PLAYERS */
+function correctPlayerSpelling(query){
+    const typed=query.toLowerCase().trim().replace(/\s+/g," ");
+    if(!typed)return null;
+
+    const exact=players.find(player=>player.name.toLowerCase()===typed);
+    if(exact)return exact;
+
+    const partial=players.filter(player=>player.name.toLowerCase().includes(typed));
+    if(partial.length===1)return partial[0];
+
+    let bestPlayer=null;
+    let bestScore=Infinity;
+
+    players.forEach(player=>{
+        const name=player.name.toLowerCase();
+        const words=name.split(/\s+/);
+        const candidates=[name,...words];
+
+        candidates.forEach(candidate=>{
+            const distance=spellingDistance(typed,candidate);
+            if(distance<bestScore){
+                bestScore=distance;
+                bestPlayer=player;
+            }
+        });
+    });
+
+    const allowedErrors=typed.length<=3?1:typed.length<=6?2:typed.length<=10?3:4;
+    return bestScore<=allowedErrors?bestPlayer:null;
+}
+
+/* AUTOCORRECT SUGGESTIONS: LOCAL PLAYERS + WIKIPEDIA */
+async function showSuggestions(query){
+    const box=document.getElementById("suggestions");
+    const typed=query.trim();
+
+    clearTimeout(suggestionTimer);
+    const thisSuggestionRequest=++suggestionRequestID;
+    selectedSuggestionIndex=-1;
+    box.innerHTML="";
+
+    if(!typed){
+        box.style.display="none";
+        return;
+    }
+
+    const q=typed.toLowerCase();
+
+    // First search the website's existing player list.
+    let matches=players.filter(player=>player.name.toLowerCase().includes(q));
+
+    // If no direct match, correct spelling for local players.
+    if(matches.length===0){
+        const corrected=correctPlayerSpelling(typed);
+        if(corrected)matches=[corrected];
+    }
+
+    if(matches.length>0){
+        box.innerHTML=matches.slice(0,6).map((player,index)=>`
+            <div class="suggestion-item" role="option" tabindex="0"
+                 data-index="${index}" data-name="${escapeHTML(player.name)}">
+                🏏 ${escapeHTML(player.name)}
+            </div>
+        `).join("");
+        box.style.display="block";
+        attachSuggestionEvents(box);
+        return;
+    }
+
+    // If no local player matches, search Wikipedia.
+    box.innerHTML='<div class="suggestion-item">🔎 Searching Wikipedia...</div>';
+    box.style.display="block";
+
+    suggestionTimer=setTimeout(async()=>{
+        try{
+            const url="https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch="
+                +encodeURIComponent(typed+" cricket player")
+                +"&srlimit=6&format=json&origin=*";
+
+            const response=await fetch(url);
+            if(!response.ok)throw new Error("Wikipedia search failed");
+
+            const data=await response.json();
+            if(thisSuggestionRequest!==suggestionRequestID)return;
+
+            const results=data.query&&data.query.search?data.query.search:[];
+            const cricketResults=results.filter(result=>{
+                const title=(result.title||"").toLowerCase();
+                const snippet=(result.snippet||"").replace(/<[^>]*>/g," ").toLowerCase();
+
+                return /cricket|cricketer|batsman|batter|bowler|wicketkeeper|all-rounder/.test(snippet)
+                    ||title.includes("cricket");
+            });
+
+            if(cricketResults.length===0){
+                box.style.display="none";
+                box.innerHTML="";
+                return;
+            }
+
+            box.innerHTML=cricketResults.map((result,index)=>`
+                <div class="suggestion-item" role="option" tabindex="0"
+                     data-index="${index}" data-name="${escapeHTML(result.title)}">
+                    🌐 ${escapeHTML(result.title)} <small>— Wikipedia</small>
+                </div>
+            `).join("");
+
+            box.style.display="block";
+            attachSuggestionEvents(box);
+        }catch(error){
+            console.error("Wikipedia suggestions error:",error);
+            if(thisSuggestionRequest===suggestionRequestID){
+                box.style.display="none";
+                box.innerHTML="";
+            }
+        }
+    },250);
+}
+
+/* CLICK AND ENTER EVENTS FOR SUGGESTIONS */
+function attachSuggestionEvents(box){
+    box.querySelectorAll(".suggestion-item[data-name]").forEach(item=>{
+        item.addEventListener("click",()=>selectSuggestion(item.dataset.name));
+        item.addEventListener("keydown",event=>{
+            if(event.key==="Enter"){
+                event.preventDefault();
+                selectSuggestion(item.dataset.name);
+            }
+        });
+    });
+}
+
+/* SELECT A SUGGESTED PLAYER */
+function selectSuggestion(name){
+    const input=document.getElementById("search");
+    input.value=name;
+    document.getElementById("suggestions").style.display="none";
+
+    clearTimeout(searchTimer);
+    requestID++;
+    externalPlayer=null;
+
+    const player=players.find(item=>item.name.toLowerCase()===name.toLowerCase());
+    if(player){
+        displayPlayers([player]);
+    }else{
+        searchPlayers();
+    }
+}
+
+/* KEYBOARD NAVIGATION */
+function handleSearchKey(event){
+    const box=document.getElementById("suggestions");
+    const items=box.querySelectorAll(".suggestion-item[data-name]");
+
+    if(event.key==="Escape"){
+        box.style.display="none";
+        return;
+    }
+
+    if(items.length===0){
+        if(event.key==="Enter"){
+            event.preventDefault();
+            searchPlayers();
+        }
+        return;
+    }
+
+    if(event.key==="ArrowDown"){
+        event.preventDefault();
+        selectedSuggestionIndex=(selectedSuggestionIndex+1)%items.length;
+    }else if(event.key==="ArrowUp"){
+        event.preventDefault();
+        selectedSuggestionIndex=(selectedSuggestionIndex-1+items.length)%items.length;
+    }else if(event.key==="Enter"){
+        event.preventDefault();
+        if(selectedSuggestionIndex>=0){
+            selectSuggestion(items[selectedSuggestionIndex].dataset.name);
+        }else{
+            selectSuggestion(items[0].dataset.name);
+        }
+        return;
+    }else{
+        return;
+    }
+
+    items.forEach((item,index)=>{
+        item.style.background=index===selectedSuggestionIndex?"#e9efff":"white";
+    });
+}
+
+/* SEARCH PLAYERS */
+function searchPlayers(){
+    const query=document.getElementById("search").value.trim();
+    clearTimeout(searchTimer);
+
+    const thisRequest=++requestID;
+    externalPlayer=null;
+
+    showSuggestions(query);
+
+    if(query===""){
+        if(currentFilter==="all"){
+            displayPlayers(players);
+        }else{
+            displayPlayers(players.filter(player=>
+                currentFilter==="India"||currentFilter==="International"
+                    ?player.country===currentFilter
+                    :player.type===currentFilter
+            ));
+        }
+        return;
+    }
+
+    const q=query.toLowerCase();
+    let results=players.filter(player=>
+        player.name.toLowerCase().includes(q)||
+        (player.countryName||player.country||"").toLowerCase().includes(q)||
+        (player.role||"").toLowerCase().includes(q)||
+        (player.batting||"").toLowerCase().includes(q)||
+        (player.bowling||"").toLowerCase().includes(q)
+    );
+
+    if(results.length===0){
+        const correctedPlayer=correctPlayerSpelling(query);
+        if(correctedPlayer)results=[correctedPlayer];
+    }
+
+    if(results.length>0){
+        displayPlayers(results);
+        return;
+    }
+
+    document.getElementById("playerContainer").innerHTML=`
+        <div class="loading">
+            🔎 Searching for <strong>${escapeHTML(query)}</strong>
+            <span>Finding player information...</span>
+        </div>`;
+
+    searchTimer=setTimeout(()=>searchExternalPlayer(query,thisRequest),600);
+}
+
+/* SEARCH WIKIPEDIA FOR PLAYERS NOT IN THE LOCAL LIST */
+async function searchExternalPlayer(query,thisRequest){
+    try{
+        const url="https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch="
+            +encodeURIComponent(query+" cricket")
+            +"&srlimit=5&format=json&origin=*";
+
+        const response=await fetch(url);
+        if(!response.ok)throw new Error("Search failed");
+
+        const data=await response.json();
+        if(thisRequest!==requestID)return;
+
+        if(!data.query||!data.query.search||data.query.search.length===0){
+            showNoResult(query);
+            return;
+        }
+
+        for(const result of data.query.search){
+            if(thisRequest!==requestID)return;
+            const profile=await getWikipediaProfile(result.title);
+            if(thisRequest!==requestID)return;
+
+            if(profile&&isCricketPlayer(profile)){
+                externalPlayer=convertWikipediaPlayer(profile);
+                displayPlayers([externalPlayer]);
+                return;
+            }
+        }
+        showNoResult(query);
+    }catch(error){
+        console.error(error);
+        if(thisRequest===requestID)showSearchError();
+    }
+}
+
+async function getWikipediaProfile(title){
+    try{
+        const response=await fetch(
+            "https://en.wikipedia.org/api/rest_v1/page/summary/"
+            +encodeURIComponent(title.replace(/ /g,"_"))
+        );
+        if(!response.ok)return null;
+        return await response.json();
+    }catch(error){
+        return null;
+    }
+}
+
+function isCricketPlayer(data){
+    const text=((data.title||"")+" "+(data.description||"")+" "+(data.extract||"")).toLowerCase();
+    return ["cricketer","cricket","batter","batsman","bowler","wicketkeeper","all-rounder","allrounder"]
+        .some(word=>text.includes(word));
+}
+
+function convertWikipediaPlayer(data){
+    const text=(data.extract||"").toLowerCase();
+    let role="Cricket Player";
+
+    if(text.includes("wicketkeeper")||text.includes("wicket-keeper")){
+        role="Wicketkeeper";
+    }else if(text.includes("all-rounder")||text.includes("allrounder")){
+        role="All-rounder";
+    }else if(text.includes("bowler")){
+        role="Bowler";
+    }else if(text.includes("batter")||text.includes("batsman")||text.includes("batswoman")){
+        role="Batter";
+    }
+
+    const countries=["India","Australia","England","Pakistan","South Africa","New Zealand","Sri Lanka","Bangladesh","Afghanistan","West Indies","Zimbabwe","Ireland","Scotland","Nepal","United States","United Arab Emirates"];
+    let countryName="Not available";
+
+    for(const country of countries){
+        if(text.includes(country.toLowerCase())){
+            countryName=country;
+            break;
+        }
+    }
+
+    return {
+        name:data.title||"Unknown Player",
+        country:"International",
+        countryName,
+        role,
+        batting:"Not available",
+        bowling:"Not available",
+        type:role,
+        formats:"Not available",
+        image:data.thumbnail?data.thumbnail.source:"",
+        description:data.extract||"Information not available.",
+        wikipedia:data.content_urls?.desktop?.page||""
+    };
+}
+
+/* OPEN PLAYER PROFILE */
+function openProfileByName(name){
+    const player=players.find(item=>item.name.toLowerCase()===name.toLowerCase());
+
+    if(player){
+        showProfileWindow(player);
+    }else if(externalPlayer&&externalPlayer.name===name){
+        showProfileWindow(externalPlayer);
+    }
+}
+
+function showProfileWindow(player){
+    const profile=window.open("","_blank");
+
+    if(!profile){
+        alert("Please allow pop-ups to view the profile.");
+        return;
+    }
+
+    const wikipediaURL=player.wikipedia||
+        "https://en.wikipedia.org/wiki/Special:Search?search="+encodeURIComponent(player.name);
+
+    const imageHTML=player.image
+        ?`<img src="${escapeHTML(player.image)}" alt="${escapeHTML(player.name)}" onerror="this.style.display='none';">`
+        :`<div style="font-size:80px;margin-bottom:20px;">🏏</div>`;
+
+    profile.document.write(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>${escapeHTML(player.name)} - CricketWorld</title>
+            <style>${document.querySelector("style").textContent}</style>
+        </head>
+        <body class="profile-page">
+            <div class="profile">
+                <div class="top">
+                    ${imageHTML}
+                    <h1>${escapeHTML(player.name)}</h1>
+                    <p>${escapeHTML(player.countryName||player.country||"Cricket Player")} &bull; ${escapeHTML(player.role||"Cricket Player")}</p>
+                </div>
+                <div class="content">
+                    <div class="details">
+                        <div class="box"><h4>Country</h4><p>${escapeHTML(player.countryName||player.country||"Not available")}</p></div>
+                        <div class="box"><h4>Role</h4><p>${escapeHTML(player.role||"Not available")}</p></div>
+                        <div class="box"><h4>Batting</h4><p>${escapeHTML(player.batting||"Not available")}</p></div>
+                        <div class="box"><h4>Bowling</h4><p>${escapeHTML(player.bowling||"Not available")}</p></div>
+                        <div class="box"><h4>Formats</h4><p>${escapeHTML(player.formats||"Not available")}</p></div>
+                    </div>
+                    <div class="about">
+                        <h2>About Player</h2>
+                        <p>${escapeHTML(player.description||"Information not available.")}</p>
+                    </div>
+                    <div class="buttons">
+                        <a href="${escapeHTML(wikipediaURL)}" target="_blank" rel="noopener noreferrer">Read More ↗</a>
+                        <button onclick="window.close()">✕ Close Profile</button>
+                    </div>
+                </div>
+            </div>
+        </body>
+        </html>
+    `);
+    profile.document.close();
+}
+
+/* FILTER PLAYERS */
+function filterPlayers(type,button){
+    document.getElementById("search").value="";
+    document.getElementById("suggestions").style.display="none";
+
+    clearTimeout(searchTimer);
+    requestID++;
+    suggestionRequestID++;
+    externalPlayer=null;
+    currentFilter=type;
+
+    document.querySelectorAll(".filter-buttons button").forEach(btn=>btn.classList.remove("active"));
+    if(button)button.classList.add("active");
+
+    if(type==="all"){
+        displayPlayers(players);
+    }else if(type==="India"||type==="International"){
+        displayPlayers(players.filter(player=>player.country===type));
+    }else{
+        displayPlayers(players.filter(player=>player.type===type));
+    }
+}
+
+/* NO RESULTS */
+function showNoResult(query){
+    document.getElementById("playerContainer").innerHTML=`
+        <div class="no-result">
+            <h3>Player Not Found</h3>
+            <p>We couldn't find a cricket player named <strong>${escapeHTML(query)}</strong>.</p>
+        </div>`;
+}
+
+function showSearchError(){
+    document.getElementById("playerContainer").innerHTML=`
+        <div class="no-result">
+            <h3>Search unavailable</h3>
+            <p>Please check your internet connection and try again.</p>
+        </div>`;
+}
+
+/* CLOSE SUGGESTIONS WHEN CLICKING OUTSIDE */
+document.addEventListener("click",function(event){
+    const searchBox=document.querySelector(".search-box");
+    if(!searchBox.contains(event.target)){
+        document.getElementById("suggestions").style.display="none";
+    }
+});
+
+/* LOAD PLAYERS */
+displayPlayers(players);
+document.getElementById("playerCount").textContent=players.length;
+</script>
+
+</body>
+</html>
